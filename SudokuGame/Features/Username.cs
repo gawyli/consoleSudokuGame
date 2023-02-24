@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SudokuGame.Features
 {
-    public class Nickname
+    public class Username
     {
         private readonly Player _player;
 
-        public Nickname(Player player)
+        public Username(Player player)
         {
             _player = player;
         }
@@ -19,7 +19,7 @@ namespace SudokuGame.Features
         public void GetPlayerNickname()
         {
             Console.WriteLine("Enter your nickname: ");
-            _player.Nickname = Console.ReadLine()!;
+            _player.Username = Console.ReadLine()!;
 
             _player.Id = new Guid();
         }

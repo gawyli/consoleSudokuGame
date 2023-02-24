@@ -1,1 +1,1 @@
-# consoleSudokuGame
+Sudoku game

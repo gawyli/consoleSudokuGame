@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SudokuGame.Models
+namespace SudokuGame.Features
 {
-    public class Player
+    public class Game
     {
-        public Guid Id { get; set; }
-        public string Nickname { get; set; }
     }
 }

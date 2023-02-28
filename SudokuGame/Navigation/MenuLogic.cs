@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Console;
 
-namespace SudokuGame.Features
+namespace SudokuGame.Navigation
 {
-    public class Menu
+    public class MenuLogic
     {
         const string TITLE = @"
              __              _         _                 ___                         
@@ -16,13 +16,13 @@ namespace SudokuGame.Features
             _\ \ | |_| || (_| || (_) ||   < | |_| |   / /_\\ | (_| || | | | | ||  __/
             \__/  \__,_| \__,_| \___/ |_|\_\ \__,_|   \____/  \__,_||_| |_| |_| \___|
                                                         ";
-        private int SelectedIndex { get; set; } = 0;
+        private static int SelectedIndex { get; set; } = 0;
 
-        public Menu()
+        public MenuLogic()
         {
         }
 
-        private void DisplayOptions(string prompt, string[] options)
+        private static void DisplayOptions(string prompt, string[] options)
         {
             WriteLine(TITLE);
             WriteLine(prompt);
@@ -51,7 +51,7 @@ namespace SudokuGame.Features
             ResetColor();
         }
 
-        public int Run(string prompt, string[] options)
+        public static int RunMenu(string prompt, string[] options)
         {
             SelectedIndex = 0;
             ConsoleKey keyPressed;

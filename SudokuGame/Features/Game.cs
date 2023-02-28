@@ -9,9 +9,9 @@ namespace SudokuGame.Features
 {
     public class Game
     {
+        private static UserConfig? UserCfg { get; set; }
         private static int[,] _board = null!;
         private static Random _random = new Random();
-        private static Dictionary<string, int> _hidingNumbers = new Dictionary<string, int>();
         private static int[,] _loadedGame = null!;
 
         public Game()
@@ -19,13 +19,15 @@ namespace SudokuGame.Features
             
         }
 
-        public Game(int[,] loadedGame)
-        {
-            _loadedGame = loadedGame;
-        }
+        //public Game(int[,] loadedGame)
+        //{
+        //    _loadedGame = loadedGame;
+        //}
 
-        public static void GenerateTheBoard(UserConfig userConfig)
+        public static void GenerateBoard(UserConfig userConfig)
         {
+            UserCfg = userConfig;
+
             _board = new int[9, 9];
 
             if (_loadedGame != null)
@@ -40,9 +42,21 @@ namespace SudokuGame.Features
             }
 
             SolveSudoku(0, 0);
-            ChosenLevel(userConfig.Level);
+            ChosenLevel(UserCfg.Level);
 
-            userConfig.Board = _board;
+            UserCfg.Board = _board;
+        }
+
+        public static void ResetBoard()
+        {
+            foreach (var key in UserCfg!.HidingNumbers.Keys) 
+            {
+                string[] cords = key.Split(',');
+                int row = int.Parse(cords[0]);
+                int col = int.Parse(cords[1]);
+
+                _board[row, col] = 0;
+            }
         }
 
         private static bool GenerateThreeRandomRows()
@@ -118,7 +132,7 @@ namespace SudokuGame.Features
         }
 
         // Backtracking
-        public static bool SolveSudoku(int row, int col)
+        private static bool SolveSudoku(int row, int col)
         {
             if (row == 9)
             {
@@ -221,7 +235,7 @@ namespace SudokuGame.Features
 
         private static void HideNumbers(int chosenLevel)
         {
-            _hidingNumbers = new Dictionary<string, int>();
+            UserCfg!.HidingNumbers = new Dictionary<string, int>();
 
             for (int i = 0; i <= chosenLevel; i++)
             {
@@ -231,7 +245,7 @@ namespace SudokuGame.Features
                 string hiddenNumbKey = row.ToString() + "," + col.ToString();   // Cords "y , x" as a key
                 int hiddenNumb;
 
-                while (_hidingNumbers.ContainsKey(hiddenNumbKey))
+                while (UserCfg.HidingNumbers.ContainsKey(hiddenNumbKey))
                 {
                     row = _random.Next(0, 9);
                     col = _random.Next(0, 9);
@@ -240,7 +254,7 @@ namespace SudokuGame.Features
                 }
 
                 hiddenNumb = _board[row, col];
-                _hidingNumbers.Add(hiddenNumbKey, hiddenNumb);
+                UserCfg.HidingNumbers.Add(hiddenNumbKey, hiddenNumb);
 
                 _board[row, col] = 0;
 

@@ -38,7 +38,7 @@ namespace SudokuGame.Navigation
                     GameManager.Ranking();
                     break;
                 case 3:
-                    Environment.Exit(0);
+                    GameManager.Exit();
                     break;
             }
         }   

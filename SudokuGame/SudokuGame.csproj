@@ -11,4 +11,8 @@
     <PackageReference Include="ConsoleMenu-simple" Version="2.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Utilities\" />
+  </ItemGroup>
+
 </Project>

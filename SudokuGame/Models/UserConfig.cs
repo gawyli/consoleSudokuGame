@@ -9,9 +9,10 @@ namespace SudokuGame.Models
     public class UserConfig
     {
         public int Time { get; set; }
-        public int Level { get; set; }
+        public int Level { get; set; } 
         public string Nickname { get; set; } = null!;
         public int[,] Board { get; set; } = null!;
+        public Dictionary<string, int> HidingNumbers { get; set; }
         public int Score { get; set; }
 
         static UserConfig? userConfigIstance;
@@ -36,6 +37,15 @@ namespace SudokuGame.Models
            }
 
            return userConfigIstance;
+        }
+
+        public string LevelAsString()
+        {
+            if (Level == 0) return "Easy";
+            else if (Level == 1) return "Medium";
+            else if (Level == 2) return "Hard";
+
+            return "Error";
         }
     }
 }

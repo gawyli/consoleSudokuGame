@@ -9,10 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="ConsoleMenu-simple" Version="2.6.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Utilities\" />
+    <PackageReference Include="Google.OrTools" Version="9.5.2237" />
+    <PackageReference Include="InputSimulator" Version="1.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
 </Project>

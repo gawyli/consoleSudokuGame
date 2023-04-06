@@ -1,5 +1,6 @@
 ﻿using SudokuGame.Features;
 using SudokuGame.Models;
+using SudokuGame.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +11,34 @@ namespace SudokuGame.Navigation
 {
     public class Menu : MenuLogic
     {
-        static readonly UserConfig _userConfig = UserConfig.GetUserConfig();
         public static void GameMenu()
         {
+            PlayerData player = new PlayerData();
+
             string menuPrompt = "Select:";
             string timePrompt = "Select time constraints:";
             string levelPrompt = "Select level:";
+            string loadGamePrompt = "Select saved game:";
             string[] menuOptions = { "Start game", "Load game", "Ranking", "Exit game" };
             string[] timeOptions = { "None", "10min", "15min", "20min", "25min" };
-            string[] levelOptions = { "Easy", "Medium", "Hard" };
+            string[] levelOptions = { "Extremely Easy", "Easy", "Medium", "Difficult", "Evil" };
 
             int selectedIndex = RunMenu(menuPrompt, menuOptions);
 
             switch (selectedIndex)
             {
                 case 0:
-                    _userConfig.Time = RunMenu(timePrompt, timeOptions);
-                    _userConfig.Level = RunMenu(levelPrompt, levelOptions);
+                    player.Time = RunMenu(timePrompt, timeOptions);
+                    player.Level = RunMenu(levelPrompt, levelOptions);
                     Console.WriteLine("Enter your username: ");
-                    _userConfig.Nickname = Console.ReadLine()!;
-                    GameManager.StartGame();
+                    player.PlayerName = Console.ReadLine()!;
+                    GameManager.StartGame(player);
                     break;
                 case 1:
-                    GameManager.LoadGame();
+                    string[] listGames = LoadGameService.GetSavedGameNames();
+                    int fileNameIndex = RunMenu(loadGamePrompt, listGames);
+                    player = LoadGameService.GetGameFromFile(listGames[fileNameIndex]);
+                    GameManager.LoadGame(player);
                     break;
                 case 2:
                     GameManager.Ranking();

@@ -10,7 +10,7 @@ namespace SudokuGame.Features
 {
     public class MovementsController
     {
-        public static void Movements(ref int currentRow, ref int currentColumn, ref bool _over, ref string cords, PlayerData playerData)
+        public static void Movements(ref int currentRow, ref int currentColumn, ref string cords, PlayerData playerData)
         {
             // Get user input
             ConsoleKeyInfo playerInput = Console.ReadKey(true);
@@ -38,7 +38,7 @@ namespace SudokuGame.Features
             }
             #endregion
 
-            #region Submenu
+            #region Features
             else if (playerInput.Key == ConsoleKey.Z)
             {
                 UndoMoveService.UndoMove(playerData);
@@ -49,7 +49,7 @@ namespace SudokuGame.Features
             }
             else if (playerInput.Key == ConsoleKey.R)
             {
-                Game.ResetBoard();
+                ResetBoardService.ResetBoard(playerData);
             }
             else if (playerInput.Key == ConsoleKey.S)
             {
@@ -57,9 +57,8 @@ namespace SudokuGame.Features
             }
             else if (playerInput.Key == ConsoleKey.Q)
             {
-                _over = true;
+                DrawGame.SetOver();
             }
-
             #endregion
 
             #region Numbers
@@ -68,30 +67,30 @@ namespace SudokuGame.Features
                 int value = playerInput.Key - ConsoleKey.D0;    // Convert KeyInfo to int
                 if (value == 0)
                 {
-                    if (playerData.HidingNumbers!.ContainsKey(cords)) // Clear numbers entered by player
+                    if (playerData.HideNumbers!.ContainsKey(cords)) // Clear numbers entered by player
                     {
                         playerData.Board[currentRow, currentColumn] = value; // Swap number entered by player to 0
 
                         // Enable player to Redo after clearing numbers
-                        if (playerData.PlayerNumbers.ContainsKey(cords) && playerData.PlayerNumbersHistory.ContainsKey(cords))
+                        if (playerData.InputNumbers.ContainsKey(cords) && playerData.InputNumbersHistory.ContainsKey(cords))
                         {
-                            playerData.PlayerNumbersHistory[cords] = playerData.PlayerNumbers[cords];
+                            playerData.InputNumbersHistory[cords] = playerData.InputNumbers[cords];
                         }
-                        else playerData.PlayerNumbersHistory.Add(cords, playerData.PlayerNumbers[cords]);
+                        else playerData.InputNumbersHistory.Add(cords, playerData.InputNumbers[cords]);
                     }
                 }
                 else
                 {
-                    if (playerData.HidingNumbers!.ContainsKey(cords)) // Enable player to enter numbers only to empty cells
+                    if (playerData.HideNumbers!.ContainsKey(cords)) // Enable player to enter numbers only to empty cells
                     {
                         playerData.Board[currentRow, currentColumn] = value; // Update the value
                         
                         // Enable player to do Undo after entered number to the empty cell
-                        if (playerData.PlayerNumbers.ContainsKey(cords))
+                        if (playerData.InputNumbers.ContainsKey(cords))
                         {
-                            playerData.PlayerNumbers[cords] = value;
+                            playerData.InputNumbers[cords] = value;
                         }
-                        else playerData.PlayerNumbers.Add(cords, value);
+                        else playerData.InputNumbers.Add(cords, value);
 
                     }
                 }

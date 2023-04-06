@@ -11,10 +11,10 @@ namespace SudokuGame.Services
     {
         public static void RedoMove(PlayerData playerData)
         {
-            if (playerData.PlayerNumbersHistory.Count > 0)
+            if (playerData.InputNumbersHistory.Count > 0)
             {
-                string lastUndoInputCords = playerData.PlayerNumbersHistory.LastOrDefault().Key;
-                int lastUndoInputNumber = playerData.PlayerNumbersHistory[lastUndoInputCords];
+                string lastUndoInputCords = playerData.InputNumbersHistory.LastOrDefault().Key;
+                int lastUndoInputNumber = playerData.InputNumbersHistory[lastUndoInputCords];
 
                 string[] cords = lastUndoInputCords.Split(',');
                 int row = int.Parse(cords[0]);
@@ -22,12 +22,12 @@ namespace SudokuGame.Services
 
                 playerData.Board[row, col] = lastUndoInputNumber;
 
-                if (playerData.PlayerNumbers.ContainsKey(lastUndoInputCords))
+                if (playerData.InputNumbers.ContainsKey(lastUndoInputCords))
                 {
                     playerData.Board[row, col] = lastUndoInputNumber;
                 }
-                else playerData.PlayerNumbers.Add(lastUndoInputCords, lastUndoInputNumber);
-                playerData.PlayerNumbersHistory.Remove(lastUndoInputCords);
+                else playerData.InputNumbers.Add(lastUndoInputCords, lastUndoInputNumber);
+                playerData.InputNumbersHistory.Remove(lastUndoInputCords);
             }
         }
     }

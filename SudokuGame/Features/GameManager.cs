@@ -1,6 +1,7 @@
 ﻿using SudokuGame.Models;
 using SudokuGame.New;
 using SudokuGame.Services;
+using SudokuGame.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,25 +19,23 @@ namespace SudokuGame.Features
     {
         public static void StartGame(PlayerData player)
         {
-            _ = new Game(player);
+            Game.NewGame(player);
 
             if (player.Time > 0)
             {
-                EndGame.SetTimer(player.TimeInMinutes()); 
+                EndGame.SetTimer(PlayerUtil.TimeInMinutes(player.Time)); 
             }
 
             DrawGame.PopulateSudoku(player);
 
-            if (DrawGame.EndGame())
-            {
-                EndGame.GameOver();
-            }
+            EndGame.Over(player.HasWon);
         }
 
         public static void LoadGame(PlayerData player)
         {
-            
             DrawGame.PopulateSudoku(player);
+
+            EndGame.Over(player.HasWon);
         }
 
         public static void Ranking()

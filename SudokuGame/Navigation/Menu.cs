@@ -13,7 +13,7 @@ namespace SudokuGame.Navigation
     {
         public static void GameMenu()
         {
-            PlayerData player = new PlayerData();
+            var player = new PlayerData();
 
             string menuPrompt = "Select:";
             string timePrompt = "Select time constraints:";
@@ -31,7 +31,7 @@ namespace SudokuGame.Navigation
                     player.Time = RunMenu(timePrompt, timeOptions);
                     player.Level = RunMenu(levelPrompt, levelOptions);
                     Console.WriteLine("Enter your username: ");
-                    player.PlayerName = Console.ReadLine()!;
+                    player.Nickname = Console.ReadLine()!;
                     GameManager.StartGame(player);
                     break;
                 case 1:

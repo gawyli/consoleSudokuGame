@@ -1,5 +1,6 @@
 ﻿using Google.OrTools.ConstraintSolver;
 using SudokuGame.Models;
+using SudokuGame.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,27 +17,12 @@ namespace SudokuGame.Features
     {
         private static bool _isOver = false;
 
-        public static void Timeout()
+        public static void SetOver()
         {
-            var sim = new InputSimulator();
-            sim.Keyboard.KeyPress(VirtualKeyCode.LEFT);
             _isOver = true;
         }
 
-        private static void IsOver(int hiddenNumbersLength, int playerInputLength)
-        {
-            if (hiddenNumbersLength == playerInputLength)
-            {
-                _isOver = true;
-            }
-        }
-
-        public static bool EndGame()
-        {
-            return _isOver;
-        }
-
-        public static void PopulateSudoku(PlayerData playerData)
+        public static void PopulateSudoku(PlayerData player)
         {
             int currentRow = 0;     //Current position Y
             int currentColumn = 0;  //Current position X
@@ -46,7 +32,12 @@ namespace SudokuGame.Features
 
             while (!_isOver)
             {
-                IsOver(playerData.HidingNumbers.Count, playerData.PlayerNumbers.Count);
+                if (player.HideNumbers.Count == player.InputNumbers.Count)
+                {
+                    player.HasWon = PlayerUtil.IsWin(player.HideNumbers, player.InputNumbers);
+
+                    if (player.HasWon) break;
+                }
 
                 // Clear the console after each user move or input
                 Console.Clear();
@@ -65,28 +56,28 @@ namespace SudokuGame.Features
                             Console.ForegroundColor = ConsoleColor.Black;
                             Console.BackgroundColor = ConsoleColor.White;
                         }
-                        if (playerData.Board[i, j] == 0)
+                        if (player.Board[i, j] == 0)
                         {
                             Console.Write("   ");
                         }
                         // if user input is wrong, it appears red
-                        else if (playerData.HidingNumbers.ContainsKey(tempCords))
+                        else if (player.HideNumbers.ContainsKey(tempCords))
                         {
-                            if (playerData.Board[i, j] != playerData.HidingNumbers[tempCords])
+                            if (player.Board[i, j] != player.HideNumbers[tempCords])
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.Write($" {playerData.Board[i, j]} ");
+                                Console.Write($" {player.Board[i, j]} ");
                             }
                             else // if user input is valid, it appears green
                             {
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.Write($" {playerData.Board[i, j]} ");
+                                Console.Write($" {player.Board[i, j]} ");
                             }
                         }
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.Write($" {playerData.Board[i, j]} ");
+                            Console.Write($" {player.Board[i, j]} ");
                         }
                             
                         Console.ForegroundColor = ConsoleColor.Gray;
@@ -98,10 +89,10 @@ namespace SudokuGame.Features
                 }
 
                 // Display the level difficulty and key menu
-                Console.WriteLine($"Level: {playerData.LevelAsString()}");
-                Console.WriteLine($"Nickname: {playerData.PlayerName}");
-                Console.WriteLine($"Time: {playerData.TimeAsString()}");
-                Console.WriteLine("Use arrow keys to move, 0-9 to set value.\n");
+                Console.WriteLine($"Level: {PlayerUtil.LevelAsString(player.Level)}");
+                Console.WriteLine($"Nickname: {player.Nickname}");
+                Console.WriteLine($"Time: {PlayerUtil.TimeAsString(player.Time)}");
+                Console.WriteLine("Use arrow keys to move.\n");
                 Console.WriteLine("Z\tUndo");
                 Console.WriteLine("X\tRedo");
                 Console.WriteLine("H\tHint");
@@ -110,7 +101,7 @@ namespace SudokuGame.Features
                 Console.WriteLine("R\tRestart board");
                 Console.WriteLine("Q\tBack to menu\n");
 
-                MovementsController.Movements(ref currentRow, ref currentColumn, ref _isOver, ref cords, playerData);
+                MovementsController.Movements(ref currentRow, ref currentColumn, ref cords, player);
             }
         }
     }

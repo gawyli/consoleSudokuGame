@@ -12,7 +12,7 @@ namespace SudokuGame.Features
 {
     public class Game
     {
-        private static PlayerData _Player { get; set; } = null!;
+        private static PlayerData Player { get; set; } = null!;
 
         private static Random _random = new Random();
 
@@ -21,28 +21,23 @@ namespace SudokuGame.Features
         private static int[,] _secondSolutionBoard = null!;
         private static int[,] _firstSolutionBoard = null!;
 
-        public Game(PlayerData playerData)
+        public static void NewGame(PlayerData player)
         {
-            _Player = playerData;
+            Player = player;
 
-            StartUp();
-        }
-
-        private void StartUp()
-        {
             _tempBoard = new int[9, 9];
             _firstSolutionBoard = new int[9, 9];
             _secondSolutionBoard = new int[9, 9];
 
             GenerateBoard();
-            GenerateLevel(_Player.Level);
+            GenerateLevel(Player.Level);
         }
 
-        public void GenerateBoard()
+        public static void GenerateBoard()
         {
             if (_loadedGame != null)
             {
-                _Player.Board = _loadedGame;
+                Player.Board = _loadedGame;
             }
 
             bool ready = GenerateThreeRandomRows();
@@ -52,22 +47,7 @@ namespace SudokuGame.Features
             }
 
             SolveSudoku(false);
-            _Player!.Board = (int[,])_tempBoard.Clone();   
-        }
-
-        public static void ResetBoard()
-        {
-            foreach (var key in _Player.HidingNumbers.Keys) 
-            {
-                string[] cords = key.Split(',');
-                int row = int.Parse(cords[0]);
-                int col = int.Parse(cords[1]);
-
-                _Player.Board[row, col] = 0;
-
-                _Player.PlayerNumbers.Clear();
-                _Player.PlayerNumbersHistory.Clear();
-            }
+            Player!.Board = (int[,])_tempBoard.Clone();   
         }
 
         private static bool GenerateThreeRandomRows()
@@ -291,7 +271,8 @@ namespace SudokuGame.Features
             switch (selectedLevel)
             {
                 case 0:
-                    HideNumbers(_random.Next(30, 35));    // Extremally Easy
+                    //HideNumbers(_random.Next(30, 35));    // Extremally Easy
+                    HideNumbers(1);
                     break;
                 case 1:
                     HideNumbers(_random.Next(35, 45));    // Easy
@@ -323,7 +304,7 @@ namespace SudokuGame.Features
                 string hiddenNumbKey = row.ToString() + "," + col.ToString();   // Cords "y , x" as a key
                 int hiddenNumbTemp;
 
-                while (_Player!.HidingNumbers.ContainsKey(hiddenNumbKey))
+                while (Player!.HideNumbers.ContainsKey(hiddenNumbKey))
                 {
                     row = _random.Next(0, 9);
                     col = _random.Next(0, 9);
@@ -345,18 +326,18 @@ namespace SudokuGame.Features
                     // Restore second last to the original value if last original value do not back the board to the unique state 
                     if (attempts > 1)
                     {
-                        string lastCords = _Player!.HidingNumbers.Keys.Last();
+                        string lastCords = Player!.HideNumbers.Keys.Last();
 
                         string[] cords = lastCords.Split(',');
                         row = int.Parse(cords[0]);
                         col = int.Parse(cords[1]);
 
-                        hiddenNumbTemp = _Player!.HidingNumbers[lastCords];
+                        hiddenNumbTemp = Player!.HideNumbers[lastCords];
 
-                        _Player!.HidingNumbers.Remove(lastCords);
+                        Player!.HideNumbers.Remove(lastCords);
 
-                        _Player!.Board[row, col] = hiddenNumbTemp;
-                        _tempBoard = (int[,])_Player!.Board.Clone();
+                        Player!.Board[row, col] = hiddenNumbTemp;
+                        _tempBoard = (int[,])Player!.Board.Clone();
 
                         attempts = 0;
                         i--;
@@ -364,9 +345,9 @@ namespace SudokuGame.Features
                 }
                 else
                 {
-                    _Player!.Board[row, col] = 0;
-                    _tempBoard = (int[,])_Player!.Board.Clone();
-                    _Player.HidingNumbers.Add(hiddenNumbKey, hiddenNumbTemp);
+                    Player!.Board[row, col] = 0;
+                    _tempBoard = (int[,])Player!.Board.Clone();
+                    Player.HideNumbers.Add(hiddenNumbKey, hiddenNumbTemp);
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace SudokuGame.Features
 {
     public class MovementsController
     {
-        public static void Movements(ref int currentRow, ref int currentColumn, ref bool over, ref string cords, UserConfig userCfg)
+        public static void Movements(ref int currentRow, ref int currentColumn, ref bool _over, ref string cords, PlayerData playerData)
         {
             // Get user input
             ConsoleKeyInfo playerInput = Console.ReadKey(true);
@@ -39,9 +39,13 @@ namespace SudokuGame.Features
             #endregion
 
             #region Submenu
-            else if (playerInput.Key == ConsoleKey.R)
+            else if (playerInput.Key == ConsoleKey.Z)
             {
-                Game.ResetBoard();
+                UndoMoveService.UndoMove(playerData);
+            }
+            else if (playerInput.Key == ConsoleKey.X)
+            {
+                RedoMoveService.RedoMove(playerData);
             }
             else if (playerInput.Key == ConsoleKey.R)
             {
@@ -49,11 +53,11 @@ namespace SudokuGame.Features
             }
             else if (playerInput.Key == ConsoleKey.S)
             {
-                SaveGameService.SaveGame();
+                SaveGameService.SaveGame(playerData);
             }
             else if (playerInput.Key == ConsoleKey.Q)
             {
-                over = true;
+                _over = true;
             }
 
             #endregion
@@ -61,19 +65,34 @@ namespace SudokuGame.Features
             #region Numbers
             else if (playerInput.Key >= ConsoleKey.D0 && playerInput.Key <= ConsoleKey.D9 && currentRow >= 0 && currentRow <= 8 && currentColumn >= 0 && currentColumn <= 8)
             {
-                int value = playerInput.Key - ConsoleKey.D0;
+                int value = playerInput.Key - ConsoleKey.D0;    // Convert KeyInfo to int
                 if (value == 0)
                 {
-                    if (userCfg.HidingNumbers.ContainsKey(cords)) // Only clear if cell is not green
+                    if (playerData.HidingNumbers!.ContainsKey(cords)) // Clear numbers entered by player
                     {
-                        userCfg.Board[currentRow, currentColumn] = 0; // Clear the value
+                        playerData.Board[currentRow, currentColumn] = value; // Swap number entered by player to 0
+
+                        // Enable player to Redo after clearing numbers
+                        if (playerData.PlayerNumbers.ContainsKey(cords) && playerData.PlayerNumbersHistory.ContainsKey(cords))
+                        {
+                            playerData.PlayerNumbersHistory[cords] = playerData.PlayerNumbers[cords];
+                        }
+                        else playerData.PlayerNumbersHistory.Add(cords, playerData.PlayerNumbers[cords]);
                     }
                 }
                 else
                 {
-                    if (userCfg.HidingNumbers.ContainsKey(cords)) // Only update if cell is not green
+                    if (playerData.HidingNumbers!.ContainsKey(cords)) // Enable player to enter numbers only to empty cells
                     {
-                        userCfg.Board[currentRow, currentColumn] = value; // Update the value
+                        playerData.Board[currentRow, currentColumn] = value; // Update the value
+                        
+                        // Enable player to do Undo after entered number to the empty cell
+                        if (playerData.PlayerNumbers.ContainsKey(cords))
+                        {
+                            playerData.PlayerNumbers[cords] = value;
+                        }
+                        else playerData.PlayerNumbers.Add(cords, value);
+
                     }
                 }
             }

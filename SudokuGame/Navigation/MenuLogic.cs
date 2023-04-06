@@ -26,6 +26,7 @@ namespace SudokuGame.Navigation
         {
             WriteLine(TITLE);
             WriteLine(prompt);
+            
 
             for (int i = 0; i < options.Length; i++)
             {

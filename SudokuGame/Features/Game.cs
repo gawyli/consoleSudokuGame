@@ -21,8 +21,6 @@ namespace SudokuGame.Features
         private static int[,] _secondSolutionBoard = null!;
         private static int[,] _firstSolutionBoard = null!;
 
-        
-
         public Game(PlayerData playerData)
         {
             _Player = playerData;

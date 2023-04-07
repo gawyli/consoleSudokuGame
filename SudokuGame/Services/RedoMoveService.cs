@@ -1,4 +1,5 @@
 ﻿using SudokuGame.Models;
+using SudokuGame.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,25 +10,27 @@ namespace SudokuGame.Services
 {
     public class RedoMoveService
     {
-        public static void RedoMove(PlayerData playerData)
+        public static void RedoMove(int[,] board, 
+            Dictionary<string, int> inputNumbers, 
+            Dictionary<string, int> inputNumbersHistory)
         {
-            if (playerData.InputNumbersHistory.Count > 0)
+            if (inputNumbersHistory.Count > 0)
             {
-                string lastUndoInputCords = playerData.InputNumbersHistory.LastOrDefault().Key;
-                int lastUndoInputNumber = playerData.InputNumbersHistory[lastUndoInputCords];
+                int row, col;
 
-                string[] cords = lastUndoInputCords.Split(',');
-                int row = int.Parse(cords[0]);
-                int col = int.Parse(cords[1]);
+                string lastUndoInputCords = inputNumbersHistory.LastOrDefault().Key;
+                int lastUndoInputNumber = inputNumbersHistory[lastUndoInputCords];
 
-                playerData.Board[row, col] = lastUndoInputNumber;
+                CordsUtil.GetCords(lastUndoInputCords, out row, out col);
 
-                if (playerData.InputNumbers.ContainsKey(lastUndoInputCords))
+                board[row, col] = lastUndoInputNumber;
+
+                if (inputNumbers.ContainsKey(lastUndoInputCords))
                 {
-                    playerData.Board[row, col] = lastUndoInputNumber;
+                    board[row, col] = lastUndoInputNumber;
                 }
-                else playerData.InputNumbers.Add(lastUndoInputCords, lastUndoInputNumber);
-                playerData.InputNumbersHistory.Remove(lastUndoInputCords);
+                else inputNumbers.Add(lastUndoInputCords, lastUndoInputNumber);
+                inputNumbersHistory.Remove(lastUndoInputCords);
             }
         }
     }

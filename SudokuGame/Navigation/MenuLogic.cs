@@ -10,12 +10,15 @@ namespace SudokuGame.Navigation
     public class MenuLogic
     {
         const string TITLE = @"
-             __              _         _                 ___                         
-            / _\  _   _   __| |  ___  | | __ _   _      / _ \  __ _  _ __ ___    ___ 
-            \ \  | | | | / _` | / _ \ | |/ /| | | |    / /_\/ / _` || '_ ` _ \  / _ \
-            _\ \ | |_| || (_| || (_) ||   < | |_| |   / /_\\ | (_| || | | | | ||  __/
-            \__/  \__,_| \__,_| \___/ |_|\_\ \__,_|   \____/  \__,_||_| |_| |_| \___|
-                                                        ";
+         (                                                       
+         )\ )        (            )         (  (                 
+        (()/(   (    )\ )      ( /(    (    )\))(   '    )  (    
+         /(_)) ))\  (()/(  (   )\())  ))\  ((_)()\ )  ( /(  )(   
+        (_))  /((_)  ((_)) )\ ((_)\  /((_) _(())\_)() )(_))(()\  
+        / __|(_))(   _| | ((_)| |(_)(_))(  \ \((_)/ /((_)_  ((_) 
+        \__ \| || |/ _` |/ _ \| / / | || |  \ \/\/ / / _` || '_| 
+        |___/ \_,_|\__,_|\___/|_\_\  \_,_|   \_/\_/  \__,_||_|                                                      
+";
         private static int SelectedIndex { get; set; } = 0;
 
         public MenuLogic()
@@ -86,6 +89,17 @@ namespace SudokuGame.Navigation
             } while (keyPressed != ConsoleKey.Enter);
 
             return SelectedIndex;
+        }
+
+        public static string RunEnterField(string prompt)
+        {
+            Clear();
+            WriteLine(TITLE);
+            WriteLine(prompt);
+            string input = string.Empty;
+            input = ReadLine();
+
+            return input!;
         }
     }
 }

@@ -19,6 +19,9 @@ namespace SudokuGame.Navigation
             string timePrompt = "Select time constraints:";
             string levelPrompt = "Select level:";
             string loadGamePrompt = "Select saved game:";
+
+            string enterNicknamePrompt = "Enter your nickname:";
+
             string[] menuOptions = { "Start game", "Load game", "Ranking", "Exit game" };
             string[] timeOptions = { "None", "10min", "15min", "20min", "25min" };
             string[] levelOptions = { "Extremely Easy", "Easy", "Medium", "Difficult", "Evil" };
@@ -30,8 +33,7 @@ namespace SudokuGame.Navigation
                 case 0:
                     player.Time = RunMenu(timePrompt, timeOptions);
                     player.Level = RunMenu(levelPrompt, levelOptions);
-                    Console.WriteLine("Enter your username: ");
-                    player.Nickname = Console.ReadLine()!;
+                    player.Nickname = RunEnterField(enterNicknamePrompt);
                     GameManager.StartGame(player);
                     break;
                 case 1:

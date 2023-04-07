@@ -1,4 +1,5 @@
 ﻿using SudokuGame.Models;
+using SudokuGame.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,18 +10,21 @@ namespace SudokuGame.Services
 {
     public class ResetBoardService
     {
-        public static void ResetBoard(PlayerData player)
+        public static void ResetBoard(int[,] board, 
+            Dictionary<string, int> hideNumbers, 
+            Dictionary<string, int> inputNumbers, 
+            Dictionary<string, int> inputNumbersHistory)
         {
-            foreach (var key in player.HideNumbers.Keys)
+            foreach (var key in hideNumbers.Keys)
             {
-                string[] cords = key.Split(',');
-                int row = int.Parse(cords[0]);
-                int col = int.Parse(cords[1]);
+                int row, col;
 
-                player.Board[row, col] = 0;
+                CordsUtil.GetCords(key, out row, out col);
 
-                player.InputNumbers.Clear();
-                player.InputNumbersHistory.Clear();
+                board[row, col] = 0;
+
+                inputNumbers.Clear();
+                inputNumbersHistory.Clear();
             }
         }
     }

@@ -22,23 +22,6 @@ namespace SudokuGame.Features
             _timer.Enabled = true;
         }
 
-        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            _timer!.Stop();
-
-            Timeout();
-
-            _timer!.Dispose();
-            
-        }
-
-        public static void Timeout()
-        {
-            var sim = new InputSimulator();
-            sim.Keyboard.KeyPress(VirtualKeyCode.LEFT);
-            DrawGame.SetOver();
-        }
-
         public static void Over(bool hasWon)
         {
             if(hasWon)
@@ -61,9 +44,9 @@ namespace SudokuGame.Features
             ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║
              ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝";
 
-            Console.Clear();
 
-            Console.WriteLine(gameOver);
+            Blinker(gameOver);
+
             Console.WriteLine("Press enter to continue..");
             Console.ReadLine();
         }
@@ -80,20 +63,42 @@ namespace SudokuGame.Features
             | $$/   \  $$| $$| $$  | $$| $$  | $$|  $$$$$$$| $$       /$$
             |__/     \__/|__/|__/  |__/|__/  |__/ \_______/|__/      |__/";
 
-            
-            for(int i = 0; i < 10; i++)
+
+            Blinker(gameWon);
+
+            Console.WriteLine("Press enter to continue..");
+            Console.ReadLine();
+        }
+
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            _timer!.Stop();
+
+            Timeout();
+
+            _timer!.Dispose();
+
+        }
+
+        private static void Timeout()
+        {
+            var sim = new InputSimulator();
+            sim.Keyboard.KeyPress(VirtualKeyCode.LEFT);
+            DrawGame.SetOver();
+        }
+
+        private static void Blinker(string text)
+        {
+            for (int i = 0; i < 10; i++)
             {
                 Console.Clear();
 
                 Task.Delay(50).Wait();
 
-                Console.WriteLine(gameWon);
+                Console.WriteLine(text);
 
                 Task.Delay(100).Wait();
             }
-
-            Console.WriteLine("Press enter to continue..");
-            Console.ReadLine();
         }
     }
 }

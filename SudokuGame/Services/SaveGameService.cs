@@ -19,8 +19,8 @@ namespace SudokuGame.Services
         {
             Stopwatch st = new Stopwatch(); // Benchmark
 
-            string fileName = player.Nickname + DateTime.UtcNow.ToString("ddMMyy-HHmmss") + ".bin";
-            string filePath = Path.Combine(dir, fileName);
+            string gameName = player.Nickname + DateTime.UtcNow.ToString("ddMMyy-HHmmss") + ".bin";
+            string filePath = Path.Combine(dir, gameName);
 
             if (!Directory.Exists(dir))
             {

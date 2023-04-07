@@ -1,4 +1,7 @@
 ﻿using SudokuGame.Models;
+using SudokuGame.New;
+using SudokuGame.Solvers;
+using SudokuGame.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,41 +19,34 @@ namespace SudokuGame.Features
 
         private static Random _random = new Random();
 
-        private static int[,] _loadedGame = null!;
         private static int[,] _tempBoard = null!;
-        private static int[,] _secondSolutionBoard = null!;
-        private static int[,] _firstSolutionBoard = null!;
 
         public static void NewGame(PlayerData player)
         {
             Player = player;
 
             _tempBoard = new int[9, 9];
-            _firstSolutionBoard = new int[9, 9];
-            _secondSolutionBoard = new int[9, 9];
 
             GenerateBoard();
             GenerateLevel(Player.Level);
         }
 
-        public static void GenerateBoard()
+        private static void GenerateBoard()
         {
-            if (_loadedGame != null)
-            {
-                Player.Board = _loadedGame;
-            }
-
-            bool ready = GenerateThreeRandomRows();
+            bool ready = GenerateThreeRows();
             while (!ready)
             {
-                ready = GenerateThreeRandomRows();
+                ready = GenerateThreeRows();
             }
 
-            SolveSudoku(false);
+            var backtracking = new Backtracking(_tempBoard);
+            backtracking.SolveSudoku();
+
             Player!.Board = (int[,])_tempBoard.Clone();   
         }
 
-        private static bool GenerateThreeRandomRows()
+        // A method that generate first, fourth and seventh row with random numbers
+        private static bool GenerateThreeRows()
         {
             List<int> row = new List<int>();
             List<List<int>> rows = new List<List<int>>();
@@ -122,149 +118,6 @@ namespace SudokuGame.Features
             return true;
         }
 
-        // Backtracking
-        public static bool SolveSudoku(bool secondSolution)
-        {
-            // Find the next empty cell
-            int row = -1;
-            int col = -1;
-
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    if (_tempBoard[i, j] == 0 || _secondSolutionBoard[i,j] == 0 && secondSolution)
-                    {
-                        row = i;
-                        col = j;
-                        break;
-                    }
-                }
-                if (row != -1)
-                {
-                    break;
-                }
-            }
-
-            // If there are no more empty cells, we have found a solution
-            if (row == -1)
-            {
-                return true;
-            }
-            
-            return PossibleNumbers(row, col, secondSolution);
-        }
-
-        private static bool PossibleNumbers(int row, int col, bool secondSolution)
-        {
-            if (!secondSolution)
-            {
-                // Try each possible value for the empty cell
-                for (int num = 1; num <= 9; num++)
-                {
-                    // Check if the value is valid for the cell
-                    if (IsValidMove(row, col, num, secondSolution))
-                    {
-                        // Assign the value to the cell
-                        _tempBoard[row, col] = num;
-
-                        // Recursively try to solve the modified board
-                        if (SolveSudoku(false))
-                        {
-                            return true;
-
-                        }
-                        // If no solution is found, undo the assignment and try the next value
-                        _tempBoard[row, col] = 0;
-                    }
-                }
-            }
-
-            if (secondSolution)
-            {
-                // Try each possible value for the empty cell
-                for (int num = 9; num >= 1; num--)
-                {
-                    // Check if the value is valid for the cell
-                    if (IsValidMove(row, col, num, secondSolution))
-                    {
-                        // Assign the value to the cell
-                        _secondSolutionBoard[row, col] = num;
-
-                        // Recursively try to solve the modified board
-                        if (SolveSudoku(true))
-                        {
-                            return true;
-
-                        }
-                        // If no solution is found, undo the assignment and try the next value
-                        _secondSolutionBoard[row, col] = 0;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private static bool IsValidMove(int row, int col, int num, bool secondSolution)
-        {
-            if (!secondSolution)
-            {
-                // Check if the value is already in the same row or column
-                for (int i = 0; i < 9; i++)
-                {
-                    if (_tempBoard[row, i] == num || _tempBoard[i, col] == num)
-                    {
-                        return false;
-                    }
-                }
-
-                // Check 3x3 sub-grid
-                int startRow = row - row % 3;   // Always 0
-                int startCol = col - col % 3;
-
-                for (int i = startRow; i < startRow + 3; i++)   // 0, 1, 2
-                {
-                    for (int j = startCol; j < startCol + 3; j++)   //0, 1, 2
-                    {
-                        if (_tempBoard[i, j] == num)     // i = {0, 1, 2}; j = {0, 1, 2}
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Check if the value is already in the same row or column
-                for (int i = 0; i < 9; i++)
-                {
-                    if (_secondSolutionBoard[row, i] == num || _secondSolutionBoard[i, col] == num)
-                    {
-                        return false;
-                    }
-                }
-
-                // Check 3x3 sub-grid
-                int startRow = row - row % 3;   // Always 0
-                int startCol = col - col % 3;
-
-                for (int i = startRow; i < startRow + 3; i++)   // 0, 1, 2
-                {
-                    for (int j = startCol; j < startCol + 3; j++)   //0, 1, 2
-                    {
-                        if (_secondSolutionBoard[i, j] == num)     // i = {0, 1, 2}; j = {0, 1, 2}
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            
-            // If the value is not in the same row, column, or box, it is valid
-            return true;
-        }
-
         // A method that picks the amount number to be remove form the the board accordingly to the chosen level by the player
         private static void GenerateLevel(int selectedLevel)
         {
@@ -284,7 +137,7 @@ namespace SudokuGame.Features
                     HideNumbers(_random.Next(50, 53));    // Difficult
                     break;
                 case 4: 
-                    HideNumbers(_random.Next(54, 56));    // Extremally Difficult
+                    HideNumbers(_random.Next(54, 58));    // Extremally Difficult -> max 24 clues (58)
                     break;
             }
         }
@@ -292,7 +145,6 @@ namespace SudokuGame.Features
         // A method that removes a given number of cells from a Sudoku board while ensuring that the board has a unique solution
         private static void HideNumbers(int numbersToRemove)
         {
-            _firstSolutionBoard = (int[,])_tempBoard.Clone();
             int attempts = 0;
 
             for (int i = 1; i <= numbersToRemove; i++)
@@ -328,15 +180,11 @@ namespace SudokuGame.Features
                     {
                         string lastCords = Player!.HideNumbers.Keys.Last();
 
-                        string[] cords = lastCords.Split(',');
-                        row = int.Parse(cords[0]);
-                        col = int.Parse(cords[1]);
+                        CordsUtil.GetCords(lastCords, out row, out col);
 
-                        hiddenNumbTemp = Player!.HideNumbers[lastCords];
-
+                        Player!.Board[row, col] = Player!.HideNumbers[lastCords];
                         Player!.HideNumbers.Remove(lastCords);
 
-                        Player!.Board[row, col] = hiddenNumbTemp;
                         _tempBoard = (int[,])Player!.Board.Clone();
 
                         attempts = 0;
@@ -348,6 +196,7 @@ namespace SudokuGame.Features
                     Player!.Board[row, col] = 0;
                     _tempBoard = (int[,])Player!.Board.Clone();
                     Player.HideNumbers.Add(hiddenNumbKey, hiddenNumbTemp);
+                    attempts--;
                 }
             }
         }
@@ -355,25 +204,15 @@ namespace SudokuGame.Features
         // A helper method that checks if a given Sudoku board has a unique solution
         private static bool HasUniqueSolution()
         {
-            _secondSolutionBoard = (int[,])_tempBoard.Clone();
+            int[,] solutionOne = ConstrainsProg.SolveBoardMin(_tempBoard);
+            int[,] solutionTwo = ConstrainsProg.SolveBoardMax(_tempBoard);
 
-            SolveSudoku(false);
-            SolveSudoku(true);
+            bool isUnique = solutionOne.Rank == solutionTwo!.Rank && Enumerable.Range(0, solutionOne.Rank)
+                                .All(dimension => 
+                                        solutionOne.GetLength(dimension) == solutionTwo.GetLength(dimension)) && solutionOne.Cast<int>()
+                                                   .SequenceEqual(solutionTwo.Cast<int>());
 
-            var equal = _tempBoard.Rank == _secondSolutionBoard!.Rank &&
-                        Enumerable.Range(0, _tempBoard.Rank).All(dimension => _tempBoard.GetLength(dimension) == _secondSolutionBoard.GetLength(dimension)) &&
-                        _tempBoard.Cast<int>().SequenceEqual(_secondSolutionBoard.Cast<int>());
-
-            bool unique = false;
-
-            if (equal)
-            {
-                unique = _tempBoard.Rank == _firstSolutionBoard!.Rank &&
-                         Enumerable.Range(0, _tempBoard.Rank).All(dimension => _tempBoard.GetLength(dimension) == _firstSolutionBoard.GetLength(dimension)) &&
-                         _tempBoard.Cast<int>().SequenceEqual(_firstSolutionBoard.Cast<int>());
-            }
-
-            return unique;
+            return isUnique;
         }
     }
 }

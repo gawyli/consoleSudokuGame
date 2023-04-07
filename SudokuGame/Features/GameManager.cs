@@ -18,7 +18,7 @@ namespace SudokuGame.Features
     public class GameManager
     {
         public static void StartGame(PlayerData player)
-        {
+        {        
             Game.NewGame(player);
 
             if (player.Time > 0)

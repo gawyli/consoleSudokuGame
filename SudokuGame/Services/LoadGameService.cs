@@ -10,9 +10,9 @@ namespace SudokuGame.Services
 {
     public class LoadGameService : DirectoryBase
     {
-        public static PlayerData GetGameFromFile(string fileName)
+        public static PlayerData GetGameFromFile(string gameName)
         {
-            string filePath = Path.Combine(dir, fileName);
+            string filePath = Path.Combine(dir, gameName);
             var player = new PlayerData();
 
             using (Stream stream = File.Open(filePath, FileMode.Open))

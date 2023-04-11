@@ -1,11 +1,4 @@
-﻿using SudokuGame.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SudokuGame.Utilities
+﻿namespace SudokuGame.Utilities
 {
     public static class PlayerUtil
     {
@@ -42,7 +35,7 @@ namespace SudokuGame.Utilities
 
         public static bool IsWin(Dictionary<string, int> HideNumbers, Dictionary<string, int> InputNumbers)
         {
-            foreach (var key in HideNumbers.Keys) 
+            foreach (var key in HideNumbers.Keys)
             {
                 if (InputNumbers[key] != HideNumbers[key]) return false;
             }

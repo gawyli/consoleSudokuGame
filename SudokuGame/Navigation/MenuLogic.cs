@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Console;
+﻿using static System.Console;
 
 namespace SudokuGame.Navigation
 {
@@ -21,15 +16,11 @@ namespace SudokuGame.Navigation
 ";
         private static int SelectedIndex { get; set; } = 0;
 
-        public MenuLogic()
-        {
-        }
-
         private static void DisplayOptions(string prompt, string[] options)
         {
             WriteLine(TITLE);
             WriteLine(prompt);
-            
+
 
             for (int i = 0; i < options.Length; i++)
             {
@@ -96,8 +87,7 @@ namespace SudokuGame.Navigation
             Clear();
             WriteLine(TITLE);
             WriteLine(prompt);
-            string input = string.Empty;
-            input = ReadLine();
+            string? input = ReadLine();
 
             return input!;
         }

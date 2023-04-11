@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SudokuGame.Solvers
+﻿namespace SudokuGame.Solvers
 {
     public class Backtracking
     {
@@ -18,7 +12,6 @@ namespace SudokuGame.Solvers
         // Backtracking
         public bool SolveSudoku()
         {
-
             // Find the next empty cell
             int row = -1;
             int col = -1;

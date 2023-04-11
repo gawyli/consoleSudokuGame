@@ -1,17 +1,11 @@
-﻿using SudokuGame.Models;
-using SudokuGame.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SudokuGame.Utilities;
 
 namespace SudokuGame.Services
 {
     public class RedoMoveService
     {
-        public static void RedoMove(int[,] board, 
-            Dictionary<string, int> inputNumbers, 
+        public static void RedoMove(int[,] board,
+            Dictionary<string, int> inputNumbers,
             Dictionary<string, int> inputNumbersHistory)
         {
             if (inputNumbersHistory.Count > 0)

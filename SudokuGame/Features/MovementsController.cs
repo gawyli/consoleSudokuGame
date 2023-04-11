@@ -1,16 +1,11 @@
 ﻿using SudokuGame.Models;
 using SudokuGame.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SudokuGame.Features
 {
     public class MovementsController
     {
-        public static void Movements(ref int currentRow, ref int currentColumn, ref string cords, PlayerData player)
+        public static void Movements(ref int currentRow, ref int currentColumn, ref string cords, ref bool indicator, PlayerData player)
         {
             // Get user input
             ConsoleKeyInfo playerInput = Console.ReadKey(true);
@@ -51,6 +46,10 @@ namespace SudokuGame.Features
             {
                 HintService.AddHint(player.Board, player.HideNumbers, player.InputNumbers);
             }
+            else if (playerInput.Key == ConsoleKey.M)
+            {
+                indicator = MistakeIndicator.Turn(indicator);
+            }
             else if (playerInput.Key == ConsoleKey.R)
             {
                 ResetBoardService.ResetBoard(player.Board, player.HideNumbers, player.InputNumbers, player.InputNumbersHistory);
@@ -58,6 +57,10 @@ namespace SudokuGame.Features
             else if (playerInput.Key == ConsoleKey.S)
             {
                 SaveGameService.SaveGame(player);
+            }
+            else if (playerInput.Key == ConsoleKey.C)
+            {
+                BenchmarkService.SolverBenchmark(player.Board);
             }
             else if (playerInput.Key == ConsoleKey.Q)
             {
@@ -88,7 +91,7 @@ namespace SudokuGame.Features
                     if (player.HideNumbers!.ContainsKey(cords)) // Enable player to enter numbers only to empty cells
                     {
                         player.Board[currentRow, currentColumn] = value; // Update the value
-                        
+
                         // Enable player to do Undo after entered number to the empty cell
                         if (player.InputNumbers.ContainsKey(cords))
                         {

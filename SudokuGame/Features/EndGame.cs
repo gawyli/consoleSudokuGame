@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
-using WindowsInput.Native;
+﻿using System.Timers;
 using WindowsInput;
+using WindowsInput.Native;
 using Timer = System.Timers.Timer;
 
 namespace SudokuGame.Features
@@ -24,7 +19,7 @@ namespace SudokuGame.Features
 
         public static void Over(bool hasWon)
         {
-            if(hasWon)
+            if (hasWon)
             {
                 GameWin();
             }
@@ -89,7 +84,7 @@ namespace SudokuGame.Features
 
         private static void Blinker(string text)
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 5; i++)
             {
                 Console.Clear();
 

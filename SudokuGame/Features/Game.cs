@@ -1,15 +1,7 @@
 ﻿using SudokuGame.Models;
-using SudokuGame.New;
 using SudokuGame.Solvers;
 using SudokuGame.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SudokuGame.Features
 {
@@ -21,7 +13,7 @@ namespace SudokuGame.Features
 
         private static int[,] _tempBoard = null!;
 
-        public static void NewGame(PlayerData player)
+        public static bool NewGame(PlayerData player)
         {
             Player = player;
 
@@ -29,6 +21,8 @@ namespace SudokuGame.Features
 
             GenerateBoard();
             GenerateLevel(Player.Level);
+
+            return true;
         }
 
         private static void GenerateBoard()
@@ -42,10 +36,10 @@ namespace SudokuGame.Features
             var backtracking = new Backtracking(_tempBoard);
             backtracking.SolveSudoku();
 
-            Player!.Board = (int[,])_tempBoard.Clone();   
+            Player!.Board = (int[,])_tempBoard.Clone();
         }
 
-        // A method that generate first, fourth and seventh row with random numbers
+        // A method that generates first, fourth and seventh row with random numbers
         private static bool GenerateThreeRows()
         {
             List<int> row = new List<int>();
@@ -136,7 +130,7 @@ namespace SudokuGame.Features
                 case 3:
                     HideNumbers(_random.Next(50, 53));    // Difficult
                     break;
-                case 4: 
+                case 4:
                     HideNumbers(_random.Next(54, 58));    // Extremally Difficult -> max 24 clues (58)
                     break;
             }
@@ -149,33 +143,32 @@ namespace SudokuGame.Features
 
             for (int i = 1; i <= numbersToRemove; i++)
             {
-                
                 int row = _random.Next(0, 9);    // Y
                 int col = _random.Next(0, 9);    // X
 
-                string hiddenNumbKey = row.ToString() + "," + col.ToString();   // Cords "y , x" as a key
-                int hiddenNumbTemp;
+                string hideNumbKey = row.ToString() + "," + col.ToString();   // Cords "y,x" as a key
+                int hideNumbTemp;
 
-                while (Player!.HideNumbers.ContainsKey(hiddenNumbKey))
+                while (Player!.HideNumbers.ContainsKey(hideNumbKey))
                 {
                     row = _random.Next(0, 9);
                     col = _random.Next(0, 9);
 
-                    hiddenNumbKey = row.ToString() + "," + col.ToString();
+                    hideNumbKey = row.ToString() + "," + col.ToString();
                 }
 
-                hiddenNumbTemp = _tempBoard![row, col];
+                hideNumbTemp = _tempBoard![row, col];
                 _tempBoard[row, col] = 0;
 
 
                 if (!HasUniqueSolution())
                 {
                     // If not, restore the original value of the cell
-                    _tempBoard[row, col] = hiddenNumbTemp;
+                    _tempBoard[row, col] = hideNumbTemp;
                     i--;
                     attempts++;
 
-                    // Restore second last to the original value if last original value do not back the board to the unique state 
+                    // Restore penultimate value to the original value if last original value don't bring back the board to the unique state 
                     if (attempts > 1)
                     {
                         string lastCords = Player!.HideNumbers.Keys.Last();
@@ -194,8 +187,10 @@ namespace SudokuGame.Features
                 else
                 {
                     Player!.Board[row, col] = 0;
-                    _tempBoard = (int[,])Player!.Board.Clone();
-                    Player.HideNumbers.Add(hiddenNumbKey, hiddenNumbTemp);
+                    //_tempBoard = (int[,])Player!.Board.Clone();
+
+                    Player.HideNumbers.Add(hideNumbKey, hideNumbTemp);
+
                     attempts--;
                 }
             }
@@ -204,13 +199,15 @@ namespace SudokuGame.Features
         // A helper method that checks if a given Sudoku board has a unique solution
         private static bool HasUniqueSolution()
         {
-            int[,] solutionOne = ConstrainsProg.SolveBoardMin(_tempBoard);
-            int[,] solutionTwo = ConstrainsProg.SolveBoardMax(_tempBoard);
+            int[,] solutionOne = ConstraintProg.SolveBoardMin(_tempBoard);
+            int[,] solutionTwo = ConstraintProg.SolveBoardMax(_tempBoard);
 
             bool isUnique = solutionOne.Rank == solutionTwo!.Rank && Enumerable.Range(0, solutionOne.Rank)
-                                .All(dimension => 
+                                .All(dimension =>
                                         solutionOne.GetLength(dimension) == solutionTwo.GetLength(dimension)) && solutionOne.Cast<int>()
                                                    .SequenceEqual(solutionTwo.Cast<int>());
+
+            
 
             return isUnique;
         }

@@ -1,18 +1,11 @@
-﻿using SudokuGame.Models;
-using SudokuGame.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SudokuGame.Utilities;
 
 namespace SudokuGame.Services
 {
     public class HintService
     {
-        public static void AddHint(int[,] board, 
-            Dictionary<string, int> hideNumbers, 
+        public static void AddHint(int[,] board,
+            Dictionary<string, int> hideNumbers,
             Dictionary<string, int> inputNumbers)
         {
             int row, col;

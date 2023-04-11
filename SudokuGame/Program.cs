@@ -1,9 +1,4 @@
-﻿using SudokuGame.Features;
-using SudokuGame.Models;
-using SudokuGame.Navigation;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
+﻿using SudokuGame.Navigation;
 
 Console.CursorVisible = false;
 

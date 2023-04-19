@@ -1,11 +1,14 @@
 ﻿using SudokuGame.Models;
 using SudokuGame.Services;
+using SudokuGame.Strategy;
+using SudokuGame.Utilities;
+using System.Security.Policy;
 
 namespace SudokuGame.Features
 {
     public class MovementsController
     {
-        public static void Movements(ref int currentRow, ref int currentColumn, ref string cords, ref bool indicator, PlayerData player)
+        public static void Movements(ref int currentRow, ref int currentColumn, ref string cords, ref bool isIndicatorOn, PlayerData player)
         {
             // Get user input
             ConsoleKeyInfo playerInput = Console.ReadKey(true);
@@ -16,7 +19,7 @@ namespace SudokuGame.Features
                 currentColumn--;
                 cords = currentRow + "," + currentColumn;
             }
-            else if (playerInput.Key == ConsoleKey.RightArrow && currentColumn < 8)
+            else if (playerInput.Key == ConsoleKey.RightArrow && currentColumn < player.BoardSize - 1)
             {
                 currentColumn++;
                 cords = currentRow + "," + currentColumn;
@@ -26,7 +29,7 @@ namespace SudokuGame.Features
                 currentRow--;
                 cords = currentRow + "," + currentColumn;
             }
-            else if (playerInput.Key == ConsoleKey.DownArrow && currentRow < 8)
+            else if (playerInput.Key == ConsoleKey.DownArrow && currentRow < player.BoardSize - 1)
             {
                 currentRow++;
                 cords = currentRow + "," + currentColumn;
@@ -44,11 +47,13 @@ namespace SudokuGame.Features
             }
             else if (playerInput.Key == ConsoleKey.H)
             {
-                HintService.AddHint(player.Board, player.HideNumbers, player.InputNumbers);
+                // Minus 3 points
+                player.Score -= HintService.AddHint(player.Board, player.HideNumbers, player.InputNumbers);
             }
             else if (playerInput.Key == ConsoleKey.M)
             {
-                indicator = MistakeIndicator.Turn(indicator);
+                player.HasUsedIndicator = true;
+                isIndicatorOn = MistakeIndicator.Turn(isIndicatorOn);
             }
             else if (playerInput.Key == ConsoleKey.R)
             {
@@ -56,22 +61,35 @@ namespace SudokuGame.Features
             }
             else if (playerInput.Key == ConsoleKey.S)
             {
-                SaveGameService.SaveGame(player);
+                SaveService.SaveGame(player);
             }
-            else if (playerInput.Key == ConsoleKey.C)
+            else if (playerInput.Key == ConsoleKey.P)
             {
-                BenchmarkService.SolverBenchmark(player.Board);
+                ResetBoardService.ResetBoard(player.Board, player.HideNumbers, player.InputNumbers, player.InputNumbersHistory);
+                BenchmarkService.SolverBenchmark(player.Board, player.Level, player.BoardSize);
             }
             else if (playerInput.Key == ConsoleKey.Q)
             {
-                DrawGame.SetOver();
+                DrawGameStrategy.SetOver();
             }
             #endregion
 
             #region Numbers
-            else if (playerInput.Key >= ConsoleKey.D0 && playerInput.Key <= ConsoleKey.D9 && currentRow >= 0 && currentRow <= 8 && currentColumn >= 0 && currentColumn <= 8)
+            else if (playerInput.Key >= ConsoleKey.D0 && playerInput.Key <= ConsoleKey.D9 ||
+                playerInput.Key >= ConsoleKey.A && playerInput.Key <= ConsoleKey.G && 
+                currentRow >= 0 && currentRow < player.BoardSize && 
+                currentColumn >= 0 && currentColumn < player.BoardSize)
             {
-                int value = playerInput.Key - ConsoleKey.D0;    // Convert KeyInfo to int
+                int value;
+                if (playerInput.Key >= ConsoleKey.A && playerInput.Key <= ConsoleKey.G)
+                {
+                    value = PlayerUtil.LetterToNumber(playerInput.Key);
+                }
+                else
+                {
+                    value = playerInput.Key - ConsoleKey.D0;    // Convert KeyInfo to int
+                }
+
                 if (value == 0)
                 {
                     if (player.HideNumbers!.ContainsKey(cords)) // Clear numbers entered by player

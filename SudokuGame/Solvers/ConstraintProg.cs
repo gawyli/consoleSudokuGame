@@ -1,47 +1,60 @@
 ﻿using Google.OrTools.ConstraintSolver;
+using SudokuGame.Models;
+using SudokuGame.Utilities;
 using Solver = Google.OrTools.ConstraintSolver.Solver;
 
 namespace SudokuGame.Solvers
 {
     public class ConstraintProg
     {
-        private static int[,]? _solutionBoard;
-        private static DecisionBuilder? _decisionBuilder;
-        private static Solver? _solver;
-        private static IntVar[,]? _possibleBoard;
+        private static int[,]? _solutionBoard = null!;
+        private static DecisionBuilder? _decisionBuilder = null!;
+        private static Solver? _solver = null!;
+        private static IntVar[,]? _possibleBoard = null!;
+        private static SolutionCollector? _solutionCollector = null!;
+        private static int boardSize;
+        private static int internalBlockSize;
 
-        public static int[,] SolveBoardMin(int[,] board)
+        public static bool HasMultipleSolutions(int[,] board)
         {
+            boardSize = Settings.BOARD_SIZE;
+            internalBlockSize = BoardUtil.InternalBlockSize(boardSize);
+
             SetUpConstrains(board);
 
-            // Search for a solution
-            _decisionBuilder = _solver!.MakePhase(_possibleBoard.Flatten(), Solver.INT_VAR_SIMPLE, Solver.ASSIGN_MIN_VALUE);
+            _solutionCollector = _solver!.MakeAllSolutionCollector();
+            _solutionCollector.Add(_possibleBoard.Flatten());
 
-            if (SearchSolution())
+            _solver.NewSearch(_decisionBuilder, _solutionCollector);
+
+            while (_solver.NextSolution())
             {
-                return _solutionBoard!;
+                if (_solutionCollector.SolutionCount() > 1)
+                {
+                    DisposeResources();
+
+                    return false;
+                }
             }
 
             DisposeResources();
 
-            return _solutionBoard = new int[9, 9];
+            return true;
         }
 
-        public static int[,] SolveBoardMax(int[,] board)
+        public static int[,] SolveBoard(int[,] board)
         {
+            boardSize = Settings.BOARD_SIZE;
+            internalBlockSize = BoardUtil.InternalBlockSize(boardSize);
+
             SetUpConstrains(board);
 
-            // Search for a solution
-            _decisionBuilder = _solver!.MakePhase(_possibleBoard.Flatten(), Solver.INT_VAR_SIMPLE, Solver.ASSIGN_MAX_VALUE);
-
             if (SearchSolution())
-            {
+            { 
                 return _solutionBoard!;
             }
 
-            DisposeResources();
-
-            return _solutionBoard = new int[9, 9];
+            return _solutionBoard = new int[1,1];
         }
 
         private static void SetUpConstrains(int[,] board)
@@ -49,28 +62,28 @@ namespace SudokuGame.Solvers
             _solver = new Solver("SudokuSolver");
 
             // Define the variables
-            _possibleBoard = _solver.MakeIntVarMatrix(9, 9, 1, 9, "board");
+            _possibleBoard = _solver.MakeIntVarMatrix(boardSize, boardSize, 1, boardSize, "board");
 
             // Define the constraints for rows and columns
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < boardSize; i++)
             {
-                _solver!.Add((from j in Enumerable.Range(0, 9) select _possibleBoard![i, j]).ToArray().AllDifferent());
-                _solver!.Add((from j in Enumerable.Range(0, 9) select _possibleBoard![j, i]).ToArray().AllDifferent());
+                _solver!.Add((from j in Enumerable.Range(0, boardSize) select _possibleBoard![i, j]).ToArray().AllDifferent());
+                _solver!.Add((from j in Enumerable.Range(0, boardSize) select _possibleBoard![j, i]).ToArray().AllDifferent());
             }
 
             // Define the constraints for the 3x3 boxes
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < internalBlockSize; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < internalBlockSize; j++)
                 {
-                    _solver!.Add((from x in Enumerable.Range(i * 3, 3) from y in Enumerable.Range(j * 3, 3) select _possibleBoard![x, y]).ToArray().AllDifferent());
+                    _solver!.Add((from x in Enumerable.Range(i * internalBlockSize, internalBlockSize) from y in Enumerable.Range(j * internalBlockSize, internalBlockSize) select _possibleBoard![x, y]).ToArray().AllDifferent());
                 }
             }
 
             // Add the initial values as constraints
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < boardSize; i++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < boardSize; j++)
                 {
                     if (board[i, j] != 0)
                     {
@@ -78,6 +91,8 @@ namespace SudokuGame.Solvers
                     }
                 }
             }
+
+            _decisionBuilder = _solver!.MakePhase(_possibleBoard.Flatten(), Solver.INT_VAR_SIMPLE, Solver.ASSIGN_MIN_VALUE);
         }
 
         private static bool SearchSolution()
@@ -101,6 +116,8 @@ namespace SudokuGame.Solvers
                 return true;
             }
 
+            DisposeResources();
+
             return false;
         }
 
@@ -108,7 +125,9 @@ namespace SudokuGame.Solvers
         {
             _decisionBuilder!.Dispose();
             _solver!.Dispose();
+            if (_solutionCollector != null) _solutionCollector!.Dispose();
             _possibleBoard = null;
         }
     }
 }
+ 

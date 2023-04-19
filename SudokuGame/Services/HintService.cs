@@ -4,7 +4,7 @@ namespace SudokuGame.Services
 {
     public class HintService
     {
-        public static void AddHint(int[,] board,
+        public static int AddHint(int[,] board,
             Dictionary<string, int> hideNumbers,
             Dictionary<string, int> inputNumbers)
         {
@@ -33,6 +33,8 @@ namespace SudokuGame.Services
                 board[row, col] = keyValuePair.Value;
                 inputNumbers[keyValuePair.Key] = keyValuePair.Value;
             }
+
+            return 3;
         }
     }
 }

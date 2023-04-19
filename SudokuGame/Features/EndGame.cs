@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using SudokuGame.Models;
+using System.Timers;
 using WindowsInput;
 using WindowsInput.Native;
 using Timer = System.Timers.Timer;
@@ -17,19 +18,19 @@ namespace SudokuGame.Features
             _timer.Enabled = true;
         }
 
-        public static void Over(bool hasWon)
+        public static void Over(bool hasWon, int score)
         {
             if (hasWon)
             {
-                GameWin();
+                GameWin(score);
             }
             else
             {
-                GameOver();
+                GameOver(score);
             }
         }
 
-        public static void GameOver()
+        public static void GameOver(int score)
         {
             string gameOver = @"
              ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ 
@@ -42,11 +43,12 @@ namespace SudokuGame.Features
 
             Blinker(gameOver);
 
+            Console.WriteLine($"\nYour score: {score}");
             Console.WriteLine("Press enter to continue..");
             Console.ReadLine();
         }
 
-        public static void GameWin()
+        public static void GameWin(int score)
         {
             string gameWon = @"                                               
              /$$      /$$ /$$                                         /$$
@@ -61,6 +63,7 @@ namespace SudokuGame.Features
 
             Blinker(gameWon);
 
+            Console.WriteLine($"\nYour score: {score}");
             Console.WriteLine("Press enter to continue..");
             Console.ReadLine();
         }
@@ -79,7 +82,7 @@ namespace SudokuGame.Features
         {
             var sim = new InputSimulator();
             sim.Keyboard.KeyPress(VirtualKeyCode.LEFT);
-            DrawGame.SetOver();
+            //DrawGame.SetOver();
         }
 
         private static void Blinker(string text)

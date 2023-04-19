@@ -42,5 +42,28 @@
 
             return true;
         }
+
+        public static int LetterToNumber(ConsoleKey consoleKey)
+        {
+            switch (consoleKey)
+            {
+                case ConsoleKey.A:
+                    return 10;
+                case ConsoleKey.B:
+                    return 11;
+                case ConsoleKey.C:
+                    return 12;
+                case ConsoleKey.D: 
+                    return 13;
+                case ConsoleKey.E:
+                    return 14;
+                case ConsoleKey.F:
+                    return 15;
+                case ConsoleKey.G:
+                    return 16;
+            }
+
+            return 0;
+        }
     }
 }

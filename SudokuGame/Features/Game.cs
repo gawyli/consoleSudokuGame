@@ -139,20 +139,19 @@ namespace SudokuGame.Features
                 switch (selectedLevel)
                 {
                     case 0:
-                        //HideNumbers(_random.Next(30, 35));    // Extremally Easy
-                        HideNumbers(1);
+                        HideNumbers(_random.Next(7, 8));    // Extremally Easy
                         break;
                     case 1:
-                        HideNumbers(_random.Next(2, 3));    // Easy
+                        HideNumbers(_random.Next(8, 9));    // Easy
                         break;
                     case 2:
-                        HideNumbers(_random.Next(3, 4));    // Medium
+                        HideNumbers(_random.Next(9, 10));    // Medium
                         break;
                     case 3:
-                        HideNumbers(_random.Next(4, 5));    // Difficult
+                        HideNumbers(_random.Next(10, 11));    // Difficult
                         break;
                     case 4:
-                        HideNumbers(_random.Next(5, 6));    //Evil
+                        HideNumbers(_random.Next(11, 12));    //Evil
                         break;
                 }
             }

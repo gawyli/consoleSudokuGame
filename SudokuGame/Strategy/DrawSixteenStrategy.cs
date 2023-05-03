@@ -16,6 +16,8 @@ namespace SudokuGame.Strategy
         {
             int boardSize = player.BoardSize;
 
+            currentColumn = 0;
+            currentRow = 0;
             isOver = false;
 
             while (!isOver)

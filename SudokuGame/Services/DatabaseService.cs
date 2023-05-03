@@ -53,10 +53,17 @@ namespace SudokuGame.Services
 
         public static void GetRecords()
         {
+
+            if (!File.Exists("db_ranking.sqlite"))
+            {
+                CreateDatabaseIfNotExists();
+            }
+
             using (var conn = GetConnection())
             using (var cmd = new SQLiteCommand(conn))
             {
                 cmd.CommandText = "SELECT nickname, score FROM highscores ORDER BY score DESC";
+                
                 using (var reader = cmd.ExecuteReader())
                 {
                     Console.WriteLine("\nHigh Scores:");

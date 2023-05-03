@@ -44,9 +44,6 @@ namespace SudokuGame.Solvers
 
         public static int[,] SolveBoard(int[,] board)
         {
-            boardSize = Settings.BOARD_SIZE;
-            internalBlockSize = BoardUtil.InternalBlockSize(boardSize);
-
             SetUpConstrains(board);
 
             if (SearchSolution())
@@ -97,15 +94,18 @@ namespace SudokuGame.Solvers
 
         private static bool SearchSolution()
         {
+            boardSize = Settings.BOARD_SIZE;
+            internalBlockSize = BoardUtil.InternalBlockSize(boardSize);
+
             _solver!.NewSearch(_decisionBuilder);
 
             if (_solver!.NextSolution())
             {
-                _solutionBoard = new int[9, 9];
+                _solutionBoard = new int[boardSize, boardSize];
 
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < boardSize; i++)
                 {
-                    for (int j = 0; j < 9; j++)
+                    for (int j = 0; j < boardSize; j++)
                     {
                         _solutionBoard[i, j] = (int)_possibleBoard![i, j].Value();
                     }

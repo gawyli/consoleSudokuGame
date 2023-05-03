@@ -75,8 +75,9 @@ namespace SudokuGame.Features
             #endregion
 
             #region Numbers
-            else if (playerInput.Key >= ConsoleKey.D0 && playerInput.Key <= ConsoleKey.D9 ||
-                playerInput.Key >= ConsoleKey.A && playerInput.Key <= ConsoleKey.G && 
+            else if (playerInput.Key >= ConsoleKey.D0 && playerInput.Key <= ConsoleKey.D4 && player.BoardSize == 4 ||
+                playerInput.Key >= ConsoleKey.D0 && playerInput.Key <= ConsoleKey.D9 && player.BoardSize >= 9 ||
+                playerInput.Key >= ConsoleKey.A && playerInput.Key <= ConsoleKey.G && player.BoardSize == 16 &&
                 currentRow >= 0 && currentRow < player.BoardSize && 
                 currentColumn >= 0 && currentColumn < player.BoardSize)
             {

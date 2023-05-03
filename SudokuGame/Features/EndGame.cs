@@ -1,4 +1,5 @@
 ﻿using SudokuGame.Models;
+using SudokuGame.Strategy;
 using System.Timers;
 using WindowsInput;
 using WindowsInput.Native;
@@ -82,7 +83,7 @@ namespace SudokuGame.Features
         {
             var sim = new InputSimulator();
             sim.Keyboard.KeyPress(VirtualKeyCode.LEFT);
-            //DrawGame.SetOver();
+            DrawGameStrategy.SetOver();
         }
 
         private static void Blinker(string text)

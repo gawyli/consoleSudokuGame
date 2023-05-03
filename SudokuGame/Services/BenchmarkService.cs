@@ -10,32 +10,39 @@ namespace SudokuGame.Services
 {
     public class BenchmarkService
     {
-        public static void SolverBenchmark(int[,] board)
+        public static void SolverBenchmark(int[,] board, int level, int boardSize)
         {
             var stopwatch = new Stopwatch();
             var backtrackingSolver = new Backtracking(board);
 
-            stopwatch.Start();
-            backtrackingSolver.SolveSudoku();
-            stopwatch.Stop();
+            if (boardSize == 16 && level > 2)
+            {
+                stopwatch.Start();
+                ConstraintProg.SolveBoard(board);
+                stopwatch.Stop();
 
-            Console.Clear();
-            Console.WriteLine("Backtracking: " + stopwatch.Elapsed + "\n");
-            stopwatch.Restart();
+                Console.WriteLine("\n===Benchmark===");
+                Console.WriteLine("Constraint Programming: " + stopwatch.Elapsed + "\n");
+                Console.WriteLine("Press enter to continue..");
+            }
+            else
+            {
+                stopwatch.Start();
+                backtrackingSolver.SolveSudoku();
+                stopwatch.Stop();
 
-            stopwatch.Start();
-            ConstraintProg.SolveBoardMin(board);
-            stopwatch.Stop();
+                Console.WriteLine("\n===Benchmark===");
+                Console.WriteLine("Backtracking: " + stopwatch.Elapsed);
+                stopwatch.Restart();
 
-            Console.WriteLine("Constraint Programming - MinValue: " + stopwatch.Elapsed);
-            stopwatch.Restart();
+                stopwatch.Start();
+                ConstraintProg.SolveBoard(board);
+                stopwatch.Stop();
 
-            stopwatch.Start();
-            ConstraintProg.SolveBoardMax(board);
-            stopwatch.Stop();
-
-            Console.WriteLine("Constraint Programming - MaxValue: " + stopwatch.Elapsed + "\n");
-            Console.WriteLine("Press enter to continue..");
+                Console.WriteLine("Constraint Programming: " + stopwatch.Elapsed + "\n");
+                Console.WriteLine("Press enter to continue..");
+            }
+            
             
             Console.ReadLine();
         }

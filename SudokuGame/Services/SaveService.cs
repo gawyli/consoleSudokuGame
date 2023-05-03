@@ -1,21 +1,22 @@
 ﻿using SudokuGame.Models;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SudokuGame.Services
 {
-    public class SaveGameService : DirectoryBase
+    public class SaveService : DirectoryBase
     {
         public static void SaveGame(PlayerData player)
         {
             Stopwatch st = new Stopwatch(); // Benchmark
 
             string gameName = player.Nickname + DateTime.UtcNow.ToString("ddMMyy-HHmmss") + ".bin";
-            string filePath = Path.Combine(dir, gameName);
+            string filePath = Path.Combine(sDir, gameName);
 
-            if (!Directory.Exists(dir))
+            if (!Directory.Exists(sDir))
             {
-                Directory.CreateDirectory(dir);
+                Directory.CreateDirectory(sDir);
             }
 
             st.Start();
@@ -29,6 +30,6 @@ namespace SudokuGame.Services
             Console.WriteLine("Stopwatch: " + st.ElapsedMilliseconds + "ms");
             Console.WriteLine("Game has been saved! Press key to continue..");
             Console.ReadKey(true);
-        }
+        } 
     }
 }

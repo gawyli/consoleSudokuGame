@@ -21,18 +21,26 @@ namespace SudokuGame.Services
         public static string[] GetSavedGameNames()
         {
             var directory = new DirectoryInfo(sDir);
-
-            FileInfo[] files = directory.GetFiles("*.bin");
-            string[] gameSaveList = new string[files.Length];
-            int counter = 0;
-
-            foreach (var file in files)
+            try
             {
-                gameSaveList[counter] += file.Name;
-                counter++;
+                FileInfo[] files = directory.GetFiles("*.bin");
+                string[] gameSaveList = new string[files.Length];
+                int counter = 0;
+
+                foreach (var file in files)
+                {
+                    gameSaveList[counter] += file.Name;
+                    counter++;
+                }
+
+                return gameSaveList;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("No saved games!");
             }
 
-            return gameSaveList;
+            return null;
         }
     }
 }

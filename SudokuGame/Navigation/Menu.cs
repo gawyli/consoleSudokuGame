@@ -40,7 +40,7 @@ namespace SudokuGame.Navigation
                     break;
                 case 1:
                     string[] listGames = LoadGameService.GetSavedGameNames();
-                    if (listGames.Length < 1)
+                    if (listGames == null)
                         break;
                     int fileNameIndex = RunMenu(loadGamePrompt, listGames);
                     player = LoadGameService.GetGameFromFile(listGames[fileNameIndex]);
